@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <!-- 页面基础元数据：声明编码、响应式视口、摘要与浏览器主题色。 -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+      name="description"
+      content="一个完全在浏览器本地运行的二维码生成与解析工具，支持高级样式、Logo、PNG/SVG 导出和多类型内容识别。"
+    >
+    <meta name="color-scheme" content="light">
+    <meta name="theme-color" content="#102a43">
+    <title>码上 · 二维码生成与解析</title>
+
+    <!-- 复用站点品牌图形作为浏览器标签页和书签图标。 -->
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="style.css">
+
+    <!-- 第三方库均保存在本地，保证页面在离线状态下仍可生成和解析二维码。 -->
+    <script src="vendor/qr-code-styling.js?v=1.9.2-utf8-default" defer></script>
+    <script src="vendor/jsQR.js?v=1.4.0" defer></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <!-- 键盘用户可跳过导航，直接进入核心工具区域。 -->
+    <a class="skip-link" href="#workspace">跳到主要内容</a>
+
+    <!-- 顶部品牌栏同时强调所有图片和内容仅在本地处理。 -->
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="brand" href="#" aria-label="码上首页">
+          <span class="brand-mark" aria-hidden="true">
+            <i></i><i></i><i></i><i></i><i></i>
+          </span>
+          <span class="brand-copy">
+            <strong>码上</strong>
+            <small>QR STUDIO</small>
+          </span>
+        </a>
+        <div class="local-pill" title="图片和内容不会离开当前设备">
+          <span class="pulse-dot" aria-hidden="true"></span>
+          100% 本地处理
+        </div>
+      </div>
+    </header>
+
+    <!-- 页面主体：包含二维码生成器、解析器和隐私说明。 -->
+    <main id="workspace" class="page-shell">
+      <h1 class="visually-hidden">二维码生成与解析工具</h1>
+      <div class="workspace-grid">
+        <!-- 生成器：收集内容和样式参数，并实时输出可下载的二维码。 -->
+        <section class="tool-card generator-card" aria-labelledby="generator-title">
+          <div class="card-heading">
+            <div>
+              <span class="section-number">01</span>
+              <h2 id="generator-title">生成二维码</h2>
+            </div>
+            <span class="heading-note">把内容变成好看的二维码</span>
+          </div>
+
+          <div class="generator-layout">
+            <!-- 生成参数表单不会提交到服务器，所有变化都由 app.js 在本地处理。 -->
+            <form id="generator-form" class="generator-form" novalidate>
+              <!-- 二维码原始内容与一键清空入口。 -->
+              <div class="field-group content-field">
+                <div class="label-row">
+                  <label for="qr-content">二维码内容</label>
+                  <span class="content-meta">
+                    <span id="content-count" class="value-note">0 字符</span>
+                    <button
+                      id="clear-content"
+                      class="clear-content-button"
+                      type="button"
+                      aria-label="一键清空二维码内容"
+                      disabled
+                    >清空</button>
+                  </span>
+                </div>
+                <textarea
+                  id="qr-content"
+                  rows="5"
+                  spellcheck="false"
+                  placeholder="输入文字、网址、Wi-Fi 信息……"
+                >https://example.com</textarea>
+                <p id="content-error" class="field-error" role="alert"></p>
+              </div>
+
+              <!-- 外观设置：尺寸、容错、点阵、定位角、颜色和边距。 -->
+              <details class="settings-panel" open>
+                <summary>
+                  <span>外观与尺寸</span>
+                  <span class="summary-hint">自定义</span>
+                </summary>
+                <div class="settings-content">
+                  <div class="control-row">
+                    <div class="field-group range-field">
+                      <div class="label-row">
+                        <label for="qr-size">画布尺寸</label>
+                        <output id="qr-size-value" for="qr-size">320 px</output>
+                      </div>
+                      <input id="qr-size" type="range" min="240" max="1024" step="16" value="320">
+                    </div>
+                    <div class="field-group compact-field">
+                      <label for="error-level">容错等级</label>
+                      <select id="error-level">
+                        <option value="L">L · 约 7%</option>
+                        <option value="M">M · 约 15%</option>
+                        <option value="Q">Q · 约 25%</option>
+                        <option value="H" selected>H · 约 30%</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="control-row">
+                    <div class="field-group compact-field">
+                      <label for="dot-style">点阵样式</label>
+                      <select id="dot-style">
+                        <option value="square">方形</option>
+                        <option value="rounded" selected>圆角</option>
+                        <option value="dots">圆点</option>
+                        <option value="classy">流线</option>
+                        <option value="classy-rounded">柔和流线</option>
+                        <option value="extra-rounded">超圆角</option>
+                      </select>
+                    </div>
+                    <div class="field-group compact-field">
+                      <label for="corner-square-style">定位框</label>
+                      <select id="corner-square-style">
+                        <option value="square">方形</option>
+                        <option value="rounded" selected>圆角</option>
+                        <option value="extra-rounded">超圆角</option>
+                        <option value="dot">圆形</option>
+                      </select>
+                    </div>
+                    <div class="field-group compact-field">
+                      <label for="corner-dot-style">定位点</label>
+                      <select id="corner-dot-style">
+                        <option value="square">方形</option>
+                        <option value="rounded">圆角</option>
+                        <option value="dot" selected>圆形</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <fieldset class="field-group color-fieldset">
+                    <legend>点阵颜色</legend>
+                    <div class="segmented-control" aria-label="颜色模式">
+                      <label><input type="radio" name="color-mode" value="solid" checked><span>纯色</span></label>
+                      <label><input type="radio" name="color-mode" value="linear"><span>线性渐变</span></label>
+                      <label><input type="radio" name="color-mode" value="radial"><span>径向渐变</span></label>
+                    </div>
+                    <div id="solid-color-controls" class="color-controls single-color">
+                      <label class="color-control" for="foreground-color">
+                        <span>前景色</span>
+                        <span class="color-input-wrap">
+                          <input id="foreground-color" type="color" value="#102a43">
+                          <code id="foreground-hex">#102A43</code>
+                        </span>
+                      </label>
+                    </div>
+                    <div id="gradient-color-controls" class="color-controls" hidden>
+                      <label class="color-control" for="gradient-start">
+                        <span>起始色</span>
+                        <span class="color-input-wrap">
+                          <input id="gradient-start" type="color" value="#116466">
+                          <code id="gradient-start-hex">#116466</code>
+                        </span>
+                      </label>
+                      <label class="color-control" for="gradient-end">
+                        <span>结束色</span>
+                        <span class="color-input-wrap">
+                          <input id="gradient-end" type="color" value="#2f80ed">
+                          <code id="gradient-end-hex">#2F80ED</code>
+                        </span>
+                      </label>
+                      <div id="gradient-angle-group" class="field-group range-field angle-field">
+                        <div class="label-row">
+                          <label for="gradient-angle">渐变角度</label>
+                          <output id="gradient-angle-value" for="gradient-angle">45°</output>
+                        </div>
+                        <input id="gradient-angle" type="range" min="0" max="360" step="15" value="45">
+                      </div>
+                    </div>
+                  </fieldset>
+
+                  <div class="control-row">
+                    <label class="color-control background-control" for="background-color">
+                      <span>背景色</span>
+                      <span class="color-input-wrap">
+                        <input id="background-color" type="color" value="#ffffff">
+                        <code id="background-hex">#FFFFFF</code>
+                      </span>
+                    </label>
+                    <div class="field-group range-field margin-field">
+                      <div class="label-row">
+                        <label for="qr-margin">留白边距</label>
+                        <output id="qr-margin-value" for="qr-margin">20 px</output>
+                      </div>
+                      <input id="qr-margin" type="range" min="8" max="64" step="2" value="20">
+                    </div>
+                  </div>
+                </div>
+              </details>
+
+              <!-- 可选 Logo 设置；上传的图片只读取为浏览器内存中的 Data URL。 -->
+              <details class="settings-panel logo-panel">
+                <summary>
+                  <span>中心 Logo</span>
+                  <span id="logo-summary" class="summary-hint">可选</span>
+                </summary>
+                <div class="settings-content">
+                  <div class="logo-upload-row">
+                    <input id="logo-input" class="visually-hidden" type="file" accept="image/png,image/jpeg,image/webp,image/gif">
+                    <button id="logo-select" class="secondary-button" type="button">选择图片</button>
+                    <div class="logo-file-copy">
+                      <strong id="logo-file-name">尚未选择</strong>
+                      <small>PNG、JPG、WebP 或 GIF，不超过 2MB</small>
+                    </div>
+                    <button id="logo-remove" class="text-button danger-text" type="button" hidden>移除</button>
+                  </div>
+                  <div id="logo-size-group" class="field-group range-field" hidden>
+                    <div class="label-row">
+                      <label for="logo-size">Logo 占比</label>
+                      <output id="logo-size-value" for="logo-size">22%</output>
+                    </div>
+                    <input id="logo-size" type="range" min="10" max="30" step="1" value="22">
+                  </div>
+                </div>
+              </details>
+            </form>
+
+            <!-- 生成结果预览、自动回读状态与下载操作。 -->
+            <aside class="generator-preview" aria-label="二维码预览">
+              <div class="preview-label-row">
+                <span>预览</span>
+                <span id="preview-size-note">320 × 320</span>
+              </div>
+              <div id="qr-stage" class="qr-stage">
+                <div id="qr-canvas" class="qr-canvas"></div>
+                <div id="qr-empty" class="qr-empty" hidden>
+                  <span aria-hidden="true">···</span>
+                  输入内容后生成
+                </div>
+              </div>
+              <div id="generation-status" class="status-message is-checking" role="status" aria-live="polite">
+                <span class="status-icon" aria-hidden="true"></span>
+                <span class="status-copy">正在验证可识别性…</span>
+              </div>
+              <div class="download-actions">
+                <button id="download-png" class="primary-button" type="button">
+                  <span aria-hidden="true">↓</span> 下载 PNG
+                </button>
+                <button id="download-svg" class="secondary-button" type="button">
+                  <span aria-hidden="true">↓</span> 下载 SVG
+                </button>
+              </div>
+              <p class="preview-tip">提示：颜色对比越高、留白越充足，扫码越稳定。</p>
+            </aside>
+          </div>
+        </section>
+
+        <!-- 解析器：支持选择、拖放和粘贴本地二维码图片。 -->
+        <section class="tool-card decoder-card" aria-labelledby="decoder-title">
+          <div class="card-heading">
+            <div>
+              <span class="section-number coral">02</span>
+              <h2 id="decoder-title">解析二维码</h2>
+            </div>
+            <span class="heading-note">从图片中快速还原信息</span>
+          </div>
+
+          <div class="decoder-body">
+            <!-- 隐藏文件输入由可访问的拖放区域和“更换图片”按钮触发。 -->
+            <input id="decode-input" class="visually-hidden" type="file" accept="image/png,image/jpeg,image/webp,image/gif">
+            <div
+              id="decode-dropzone"
+              class="dropzone"
+              role="button"
+              tabindex="0"
+              aria-describedby="dropzone-help"
+            >
+              <div class="drop-visual" aria-hidden="true">
+                <span class="corner corner-tl"></span>
+                <span class="corner corner-tr"></span>
+                <span class="corner corner-bl"></span>
+                <span class="corner corner-br"></span>
+                <span class="scan-line"></span>
+                <span class="upload-arrow">↑</span>
+              </div>
+              <strong>拖放二维码图片到这里</strong>
+              <span id="dropzone-help">或 <span class="link-copy">点击选择</span> · 也可以直接粘贴截图</span>
+              <small>支持 PNG、JPG、WebP、GIF · 最大 12MB</small>
+            </div>
+
+            <!-- Canvas 展示待解析图片，并在成功后绘制二维码定位边框。 -->
+            <div id="decode-preview-wrap" class="decode-preview-wrap" hidden>
+              <canvas id="decode-canvas" aria-label="待解析二维码图片"></canvas>
+              <div class="preview-overlay-bar">
+                <span id="decode-file-name"></span>
+                <button id="decode-replace" class="glass-button" type="button">更换图片</button>
+              </div>
+            </div>
+
+            <!-- aria-live 状态区域向视觉用户和辅助技术同步解析进度。 -->
+            <div id="decode-status" class="decode-status is-idle" role="status" aria-live="polite">
+              <span class="decode-status-icon" aria-hidden="true">i</span>
+              <div>
+                <strong>等待图片</strong>
+                <span>选择一张包含二维码的清晰图片开始解析。</span>
+              </div>
+            </div>
+
+            <!-- 解析结果始终以纯文本渲染，并按安全协议提供快捷操作。 -->
+            <article id="decode-result" class="decode-result" aria-labelledby="result-title" hidden>
+              <div class="result-heading">
+                <div>
+                  <span id="result-type" class="type-badge">普通文本</span>
+                  <h3 id="result-title">解析成功</h3>
+                </div>
+                <span class="success-mark" aria-hidden="true">✓</span>
+              </div>
+
+              <dl id="result-fields" class="result-fields"></dl>
+
+              <div class="raw-result">
+                <div class="label-row">
+                  <span class="field-label">原始内容</span>
+                  <button id="copy-raw" class="text-button" type="button">复制全部</button>
+                </div>
+                <pre id="raw-content" tabindex="0"></pre>
+              </div>
+
+              <div id="result-actions" class="result-actions"></div>
+            </article>
+          </div>
+        </section>
+      </div>
+
+      <!-- 再次明确隐私边界：应用没有后端，也不会持久化用户内容。 -->
+      <section class="privacy-strip" aria-label="隐私说明">
+        <div class="privacy-icon" aria-hidden="true"></div>
+        <div>
+          <strong>你的内容，只属于你</strong>
+          <p>生成、解析和图片处理均在当前设备完成。没有服务器，也不会保存任何记录。</p>
+        </div>
+        <span class="offline-tag">OFFLINE READY</span>
+      </section>
+    </main>
+
+    <!-- 页脚保留产品名与纯前端技术说明。 -->
+    <footer>
+      <span>码上 QR Studio</span>
+      <span>纯 HTML · CSS · JavaScript</span>
+    </footer>
+
+    <!-- 全局轻提示用于复制、下载、上传和错误反馈。 -->
+    <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+    <noscript>此工具需要启用 JavaScript 才能生成和解析二维码。</noscript>
+  </body>
+</html>

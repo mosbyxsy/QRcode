@@ -1,0 +1,1432 @@
+/* ==================== 设计令牌与全局基础 ==================== */
+:root {
+  --ink: #102a43;
+  --ink-soft: #334e68;
+  --muted: #6b7c8f;
+  --line: #dbe4ea;
+  --line-strong: #c9d6df;
+  --paper: #ffffff;
+  --canvas: #f3f6f5;
+  --teal: #116466;
+  --teal-deep: #0b4f51;
+  --teal-pale: #e1f1ee;
+  --mint: #b8e0d2;
+  --coral: #e66b4d;
+  --coral-pale: #fff0ea;
+  --warning: #a26012;
+  --warning-bg: #fff6df;
+  --danger: #b43f3f;
+  --success: #18794e;
+  --shadow: 0 24px 65px rgba(30, 55, 65, 0.1);
+  --radius-lg: 24px;
+  --radius-md: 15px;
+  --radius-sm: 10px;
+  font-family: Inter, "SF Pro Display", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  color: var(--ink);
+  background: var(--canvas);
+  font-synthesis: none;
+}
+
+/* 统一盒模型，避免边框和内边距导致组件尺寸溢出。 */
+* {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* 页面背景使用低对比度光晕，突出白色工具卡片而不干扰二维码。 */
+body {
+  min-width: 320px;
+  margin: 0;
+  background:
+    radial-gradient(circle at 14% 2%, rgba(184, 224, 210, 0.35), transparent 24rem),
+    radial-gradient(circle at 95% 24%, rgba(230, 107, 77, 0.08), transparent 21rem),
+    var(--canvas);
+  color: var(--ink);
+  line-height: 1.5;
+}
+
+/* 所有交互控件继承页面字体，保持中英文排版一致。 */
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button,
+select,
+input[type="color"],
+input[type="range"] {
+  cursor: pointer;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+summary:focus-visible,
+[tabindex="0"]:focus-visible,
+a:focus-visible {
+  outline: 3px solid rgba(47, 128, 237, 0.32);
+  outline-offset: 3px;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+/* 保留给屏幕阅读器、但不参与视觉布局的通用辅助类。 */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* 键盘导航时显示的“跳到主要内容”链接。 */
+.skip-link {
+  position: fixed;
+  z-index: 100;
+  top: 12px;
+  left: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: var(--ink);
+  color: white;
+  transform: translateY(-150%);
+  transition: transform 160ms ease;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+/* ==================== 顶部品牌栏 ==================== */
+.site-header {
+  border-bottom: 1px solid rgba(201, 214, 223, 0.72);
+  background: rgba(243, 246, 245, 0.82);
+  backdrop-filter: blur(14px);
+}
+
+.header-inner,
+.page-shell,
+footer {
+  width: min(1500px, calc(100% - 48px));
+  margin-inline: auto;
+}
+
+.header-inner {
+  display: flex;
+  min-height: 78px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: inherit;
+  text-decoration: none;
+}
+
+/* 用 CSS 网格模拟二维码图形，避免额外的图片请求。 */
+.brand-mark {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 3px;
+  padding: 5px;
+  border-radius: 10px;
+  background: var(--ink);
+  box-shadow: 0 7px 18px rgba(16, 42, 67, 0.18);
+}
+
+.brand-mark i {
+  display: block;
+  border-radius: 2px;
+  background: #fff;
+}
+
+.brand-mark i:nth-child(2) {
+  grid-column: 3;
+}
+
+.brand-mark i:nth-child(3) {
+  grid-row: 2;
+  grid-column: 2;
+  background: var(--mint);
+}
+
+.brand-mark i:nth-child(4) {
+  grid-row: 3;
+  grid-column: 1;
+}
+
+.brand-mark i:nth-child(5) {
+  grid-row: 3;
+  grid-column: 3;
+}
+
+.brand-copy {
+  display: grid;
+  line-height: 1.05;
+}
+
+.brand-copy strong {
+  font-size: 19px;
+  letter-spacing: 0.08em;
+}
+
+.brand-copy small {
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+}
+
+/* 本地处理状态徽标，向用户持续说明隐私边界。 */
+.local-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 13px;
+  border: 1px solid rgba(17, 100, 102, 0.16);
+  border-radius: 999px;
+  background: rgba(225, 241, 238, 0.72);
+  color: var(--teal-deep);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #32a376;
+  box-shadow: 0 0 0 4px rgba(50, 163, 118, 0.13);
+}
+
+/* ==================== 主功能区与卡片骨架 ==================== */
+.page-shell {
+  padding-block: 28px 36px;
+}
+
+/* 宽屏下生成器与解析器并排，较窄屏幕由媒体查询改为单列。 */
+.workspace-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(420px, 0.75fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.tool-card {
+  overflow: hidden;
+  border: 1px solid rgba(201, 214, 223, 0.82);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: var(--shadow);
+}
+
+/* 工具卡片标题栏统一编号、标题和简短功能说明。 */
+.card-heading {
+  display: flex;
+  min-height: 86px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 28px;
+  border-bottom: 1px solid var(--line);
+}
+
+.card-heading > div {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.card-heading h2 {
+  margin: 0;
+  font-size: 21px;
+  letter-spacing: -0.02em;
+}
+
+.section-number {
+  display: grid;
+  width: 29px;
+  height: 29px;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--teal-pale);
+  color: var(--teal);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.section-number.coral {
+  background: var(--coral-pale);
+  color: var(--coral);
+}
+
+.heading-note {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+/* ==================== 二维码生成器表单 ==================== */
+.generator-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.63fr);
+}
+
+.generator-form {
+  padding: 28px;
+  border-right: 1px solid var(--line);
+}
+
+/* 表单字段使用 min-width: 0 防止长文本撑开网格。 */
+.field-group {
+  min-width: 0;
+}
+
+.field-group > label,
+.label-row label,
+.color-fieldset legend,
+.field-label,
+.color-control > span:first-child {
+  color: var(--ink-soft);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.value-note,
+output {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.content-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+
+/* 清空按钮靠近字符计数，减少鼠标在表单中的移动距离。 */
+.clear-content-button {
+  min-height: 25px;
+  padding: 2px 9px;
+  border: 1px solid rgba(180, 63, 63, 0.18);
+  border-radius: 999px;
+  background: #fff8f6;
+  color: var(--danger);
+  font-size: 10px;
+  font-weight: 750;
+  transition: border-color 150ms ease, background 150ms ease, color 150ms ease;
+}
+
+.clear-content-button:hover:not(:disabled) {
+  border-color: rgba(180, 63, 63, 0.36);
+  background: #fff0ed;
+}
+
+.clear-content-button:disabled {
+  border-color: var(--line);
+  background: #f4f6f7;
+  color: #9aa8b3;
+}
+
+textarea,
+select {
+  width: 100%;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: #fbfcfc;
+  color: var(--ink);
+  transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+textarea:hover,
+select:hover {
+  border-color: #afc0cc;
+}
+
+textarea:focus,
+select:focus {
+  border-color: var(--teal);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(17, 100, 102, 0.1);
+  outline: 0;
+}
+
+textarea {
+  min-height: 120px;
+  margin-top: 8px;
+  padding: 14px 15px;
+  resize: vertical;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+select {
+  height: 42px;
+  margin-top: 7px;
+  padding: 0 34px 0 11px;
+}
+
+.field-error {
+  min-height: 18px;
+  margin: 5px 0 0;
+  color: var(--danger);
+  font-size: 11px;
+}
+
+/* 可折叠设置面板让高级参数不占据初始视线焦点。 */
+.settings-panel {
+  border-top: 1px solid var(--line);
+}
+
+.content-field + .settings-panel {
+  margin-top: 16px;
+}
+
+.settings-panel summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 17px 2px;
+  cursor: pointer;
+  list-style: none;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.settings-panel summary::-webkit-details-marker {
+  display: none;
+}
+
+.settings-panel summary::before {
+  content: "+";
+  display: inline-grid;
+  width: 20px;
+  height: 20px;
+  margin-right: 9px;
+  place-items: center;
+  border-radius: 50%;
+  background: #edf2f3;
+  color: var(--muted);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.settings-panel[open] summary::before {
+  content: "−";
+  background: var(--teal-pale);
+  color: var(--teal);
+}
+
+.settings-panel summary > span:first-child {
+  margin-right: auto;
+}
+
+.summary-hint {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.settings-content {
+  display: grid;
+  gap: 18px;
+  padding: 3px 2px 23px;
+}
+
+.control-row {
+  display: flex;
+  align-items: end;
+  gap: 14px;
+}
+
+.control-row > * {
+  flex: 1;
+}
+
+.compact-field {
+  min-width: 116px;
+}
+
+.range-field {
+  padding-bottom: 2px;
+}
+
+input[type="range"] {
+  width: 100%;
+  height: 4px;
+  margin: 16px 0 5px;
+  border-radius: 99px;
+  accent-color: var(--teal);
+  background: var(--line);
+}
+
+.color-fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.color-fieldset legend {
+  margin-bottom: 8px;
+}
+
+/* 颜色模式采用分段控件表现三个互斥选项。 */
+.segmented-control {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
+  padding: 3px;
+  border-radius: 10px;
+  background: #edf2f3;
+}
+
+.segmented-control label {
+  position: relative;
+}
+
+.segmented-control input {
+  position: absolute;
+  opacity: 0;
+}
+
+.segmented-control span {
+  display: grid;
+  min-height: 33px;
+  place-items: center;
+  border-radius: 8px;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.segmented-control input:checked + span {
+  background: #fff;
+  color: var(--teal);
+  box-shadow: 0 2px 8px rgba(42, 66, 73, 0.1);
+}
+
+.segmented-control input:focus-visible + span {
+  outline: 3px solid rgba(47, 128, 237, 0.3);
+}
+
+.color-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.color-controls[hidden] {
+  display: none;
+}
+
+.color-controls.single-color {
+  grid-template-columns: 1fr;
+}
+
+.color-control {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 11px;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  background: #fbfcfc;
+}
+
+.color-input-wrap {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 7px;
+}
+
+input[type="color"] {
+  width: 25px;
+  height: 25px;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+input[type="color"]::-webkit-color-swatch {
+  border: 1px solid rgba(16, 42, 67, 0.15);
+  border-radius: 6px;
+}
+
+.color-control code {
+  overflow: hidden;
+  color: var(--ink-soft);
+  font-size: 10px;
+  text-overflow: ellipsis;
+}
+
+.angle-field {
+  grid-column: 1 / -1;
+}
+
+.background-control {
+  align-self: stretch;
+}
+
+.margin-field {
+  min-width: 150px;
+}
+
+/* Logo 上传行在窄屏下允许换行，避免文件名挤压按钮。 */
+.logo-upload-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-file-copy {
+  display: grid;
+  min-width: 0;
+  margin-right: auto;
+}
+
+.logo-file-copy strong {
+  overflow: hidden;
+  max-width: 180px;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.logo-file-copy small {
+  color: var(--muted);
+  font-size: 9px;
+}
+
+/* ==================== 按钮体系 ==================== */
+.primary-button,
+.secondary-button,
+.text-button,
+.glass-button,
+.action-button {
+  border: 0;
+  border-radius: 10px;
+  font-weight: 750;
+  transition: transform 150ms ease, background 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.primary-button,
+.secondary-button,
+.action-button {
+  min-height: 42px;
+  padding: 0 15px;
+}
+
+.primary-button {
+  background: var(--ink);
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(16, 42, 67, 0.17);
+}
+
+.primary-button:hover:not(:disabled) {
+  background: #173a58;
+  transform: translateY(-1px);
+}
+
+.secondary-button {
+  border: 1px solid var(--line-strong);
+  background: #fff;
+  color: var(--ink);
+}
+
+.secondary-button:hover:not(:disabled) {
+  border-color: #9eb2c0;
+  background: #f8fafb;
+}
+
+.text-button {
+  padding: 4px 2px;
+  background: transparent;
+  color: var(--teal);
+  font-size: 11px;
+}
+
+.text-button:hover {
+  text-decoration: underline;
+}
+
+.danger-text {
+  color: var(--danger);
+}
+
+/* ==================== 生成结果预览 ==================== */
+.generator-preview {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  padding: 28px 24px;
+  background:
+    linear-gradient(rgba(16, 42, 67, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(16, 42, 67, 0.025) 1px, transparent 1px),
+    #fafcfc;
+  background-size: 18px 18px;
+}
+
+.preview-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* 正方形舞台维持二维码比例，并为 SVG/Canvas 提供统一容器。 */
+.qr-stage {
+  position: relative;
+  display: grid;
+  width: 100%;
+  aspect-ratio: 1;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 12px 30px rgba(24, 49, 61, 0.08);
+}
+
+.qr-canvas {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  padding: 9%;
+}
+
+.qr-canvas canvas,
+.qr-canvas svg {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.qr-empty {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+}
+
+.qr-empty span {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--line-strong);
+  font-size: 32px;
+  letter-spacing: 0.2em;
+}
+
+/* 自动回读结果通过颜色和图标区分检查中、成功、警告和空状态。 */
+.status-message {
+  display: flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 9px;
+  margin: 14px 0;
+  padding: 9px 11px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.status-message .status-icon {
+  display: grid;
+  width: 17px;
+  height: 17px;
+  flex: 0 0 17px;
+  place-items: center;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+}
+
+.status-message.is-checking {
+  background: #edf3f6;
+  color: var(--ink-soft);
+}
+
+.status-message.is-checking .status-icon {
+  border-right-color: transparent;
+  animation: spin 0.8s linear infinite;
+}
+
+.status-message.is-valid {
+  background: #e6f5ed;
+  color: var(--success);
+}
+
+.status-message.is-valid .status-icon::before {
+  content: "✓";
+  font-size: 11px;
+}
+
+.status-message.is-warning {
+  background: var(--warning-bg);
+  color: var(--warning);
+}
+
+.status-message.is-warning .status-icon::before {
+  content: "!";
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.status-message.is-empty {
+  background: #edf3f6;
+  color: var(--muted);
+}
+
+.status-message.is-empty .status-icon::before {
+  content: "i";
+  font-size: 10px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.download-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.download-actions button {
+  font-size: 11px;
+}
+
+.download-actions button span {
+  margin-right: 5px;
+  font-size: 16px;
+}
+
+.preview-tip {
+  margin: 14px 0 0;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* ==================== 二维码图片解析器 ==================== */
+.decoder-body {
+  display: grid;
+  gap: 17px;
+  padding: 28px;
+}
+
+/* 拖放区同时支持鼠标点击和键盘激活。 */
+.dropzone {
+  display: grid;
+  min-height: 270px;
+  place-items: center;
+  align-content: center;
+  padding: 30px;
+  border: 1.5px dashed #b4c3cc;
+  border-radius: 17px;
+  background: #fafcfc;
+  color: var(--ink-soft);
+  cursor: pointer;
+  text-align: center;
+  transition: border 160ms ease, background 160ms ease, transform 160ms ease;
+}
+
+.dropzone:hover,
+.dropzone.is-dragging {
+  border-color: var(--teal);
+  background: #f2f9f7;
+}
+
+.dropzone.is-dragging {
+  transform: scale(1.01);
+}
+
+.dropzone strong {
+  margin-top: 20px;
+  color: var(--ink);
+  font-size: 15px;
+}
+
+.dropzone > span {
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.dropzone small {
+  margin-top: 16px;
+  color: #8a9aa8;
+  font-size: 9px;
+  letter-spacing: 0.04em;
+}
+
+.link-copy {
+  color: var(--teal);
+  font-weight: 800;
+}
+
+.drop-visual {
+  position: relative;
+  display: grid;
+  width: 74px;
+  height: 74px;
+  place-items: center;
+}
+
+.corner {
+  position: absolute;
+  width: 19px;
+  height: 19px;
+  border-color: var(--teal);
+  border-style: solid;
+}
+
+.corner-tl { top: 0; left: 0; border-width: 2px 0 0 2px; border-radius: 5px 0 0; }
+.corner-tr { top: 0; right: 0; border-width: 2px 2px 0 0; border-radius: 0 5px 0 0; }
+.corner-bl { bottom: 0; left: 0; border-width: 0 0 2px 2px; border-radius: 0 0 0 5px; }
+.corner-br { right: 0; bottom: 0; border-width: 0 2px 2px 0; border-radius: 0 0 5px; }
+
+.scan-line {
+  position: absolute;
+  top: 50%;
+  right: 7px;
+  left: 7px;
+  height: 1px;
+  background: var(--coral);
+  box-shadow: 0 0 7px rgba(230, 107, 77, 0.55);
+}
+
+.upload-arrow {
+  color: var(--teal);
+  font-size: 27px;
+  font-weight: 300;
+}
+
+/* Canvas 预览容器叠加文件名和更换图片操作。 */
+.decode-preview-wrap {
+  position: relative;
+  overflow: hidden;
+  border-radius: 17px;
+  background: #182b38;
+}
+
+.decode-preview-wrap canvas {
+  display: block;
+  width: 100%;
+  max-height: 460px;
+  object-fit: contain;
+}
+
+.preview-overlay-bar {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  background: linear-gradient(transparent, rgba(7, 22, 31, 0.82));
+  color: #fff;
+  font-size: 10px;
+}
+
+.preview-overlay-bar > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.glass-button {
+  flex: 0 0 auto;
+  padding: 7px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 10px;
+  backdrop-filter: blur(8px);
+}
+
+/* 解析状态条为 aria-live 区域提供对应的视觉反馈。 */
+.decode-status {
+  display: flex;
+  min-height: 66px;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 15px;
+  border-radius: 12px;
+  background: #f1f4f6;
+}
+
+.decode-status-icon {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  place-items: center;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+  box-shadow: 0 2px 7px rgba(25, 49, 60, 0.08);
+}
+
+.decode-status > div {
+  display: grid;
+}
+
+.decode-status strong {
+  font-size: 12px;
+}
+
+.decode-status div span {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.decode-status.is-loading {
+  background: #edf3f6;
+}
+
+.decode-status.is-loading .decode-status-icon {
+  border: 2px solid var(--teal);
+  border-right-color: transparent;
+  color: transparent;
+  animation: spin 0.8s linear infinite;
+}
+
+.decode-status.is-success {
+  background: #e6f5ed;
+}
+
+.decode-status.is-success .decode-status-icon {
+  color: var(--success);
+}
+
+.decode-status.is-error {
+  background: #fff0ed;
+}
+
+.decode-status.is-error .decode-status-icon {
+  color: var(--danger);
+}
+
+/* 结构化结果、原始文本和快捷操作统一收纳在结果卡片中。 */
+.decode-result {
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+}
+
+.result-heading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  margin-bottom: 17px;
+}
+
+.result-heading h3 {
+  margin: 6px 0 0;
+  font-size: 18px;
+}
+
+.type-badge {
+  display: inline-flex;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: var(--teal-pale);
+  color: var(--teal-deep);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.success-mark {
+  display: grid;
+  width: 29px;
+  height: 29px;
+  place-items: center;
+  border-radius: 50%;
+  background: #e6f5ed;
+  color: var(--success);
+  font-weight: 900;
+}
+
+.result-fields {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 8px 16px;
+  margin: 0 0 18px;
+  padding: 13px 0;
+  border-block: 1px solid var(--line);
+}
+
+.result-fields:empty {
+  display: none;
+}
+
+.result-fields dt {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.result-fields dd {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.raw-result {
+  margin-top: 4px;
+}
+
+.raw-result pre {
+  max-height: 170px;
+  margin: 8px 0 0;
+  padding: 13px;
+  overflow: auto;
+  border-radius: 10px;
+  background: #f4f6f7;
+  color: var(--ink-soft);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 10px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 15px;
+}
+
+.action-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--teal);
+  color: #fff;
+  font-size: 11px;
+  text-decoration: none;
+}
+
+.action-button:hover {
+  background: var(--teal-deep);
+}
+
+.action-button.is-secondary {
+  border: 1px solid var(--line-strong);
+  background: #fff;
+  color: var(--ink);
+}
+
+/* ==================== 隐私说明与页脚 ==================== */
+.privacy-strip {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 24px;
+  padding: 19px 24px;
+  border: 1px solid rgba(17, 100, 102, 0.13);
+  border-radius: 16px;
+  background: rgba(225, 241, 238, 0.68);
+}
+
+/* 盾牌与勾选均由 CSS 绘制，表达数据仅在本地处理。 */
+.privacy-icon {
+  position: relative;
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  place-items: center;
+  border: 1px solid rgba(17, 100, 102, 0.13);
+  border-radius: 13px;
+  background: linear-gradient(145deg, #fff, #f4fbf9);
+  box-shadow: 0 5px 15px rgba(17, 100, 102, 0.11);
+}
+
+.privacy-icon::before {
+  content: "";
+  width: 22px;
+  height: 25px;
+  background: linear-gradient(160deg, #178082, var(--teal-deep));
+  clip-path: polygon(50% 0, 90% 15%, 86% 60%, 72% 81%, 50% 100%, 28% 81%, 14% 60%, 10% 15%);
+  filter: drop-shadow(0 3px 4px rgba(11, 79, 81, 0.2));
+}
+
+.privacy-icon::after {
+  content: "";
+  position: absolute;
+  top: 17px;
+  left: 17px;
+  width: 8px;
+  height: 4px;
+  border-bottom: 2px solid #fff;
+  border-left: 2px solid #fff;
+  transform: rotate(-45deg);
+}
+
+.privacy-strip > div:nth-child(2) {
+  margin-right: auto;
+}
+
+.privacy-strip strong {
+  font-size: 12px;
+}
+
+.privacy-strip p {
+  margin: 3px 0 0;
+  color: var(--ink-soft);
+  font-size: 10px;
+}
+
+.offline-tag {
+  color: var(--teal);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+}
+
+footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: 22px 38px;
+  color: #7c8d99;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+/* 全局轻提示默认隐藏，添加 is-visible 后从底部浮现。 */
+.toast {
+  position: fixed;
+  z-index: 90;
+  right: 24px;
+  bottom: 24px;
+  max-width: min(360px, calc(100vw - 48px));
+  padding: 12px 16px;
+  border-radius: 11px;
+  background: var(--ink);
+  color: white;
+  box-shadow: 0 12px 30px rgba(16, 42, 67, 0.25);
+  font-size: 12px;
+  font-weight: 650;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(12px);
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.toast.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+noscript {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 12px;
+  background: var(--danger);
+  color: white;
+  text-align: center;
+}
+
+/* ==================== 响应式布局 ==================== */
+/* 中等宽度下将两张工具卡片改为纵向排列。 */
+@media (max-width: 1200px) {
+  .workspace-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .generator-layout {
+    grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
+  }
+}
+
+/* 手机和平板竖屏：缩小留白，并将生成器内部改为单列。 */
+@media (max-width: 760px) {
+  .header-inner,
+  .page-shell,
+  footer {
+    width: min(100% - 28px, 1500px);
+  }
+
+  .header-inner {
+    min-height: 68px;
+  }
+
+  .page-shell {
+    padding-top: 20px;
+  }
+
+  .tool-card {
+    border-radius: 19px;
+  }
+
+  .card-heading {
+    min-height: 76px;
+    padding: 20px;
+  }
+
+  .generator-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .generator-form {
+    padding: 22px 20px;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .generator-preview,
+  .decoder-body {
+    padding: 22px 20px;
+  }
+
+  .qr-stage {
+    width: min(100%, 390px);
+    margin-inline: auto;
+  }
+
+  .control-row {
+    flex-wrap: wrap;
+  }
+
+  .compact-field {
+    flex: 1 1 130px;
+  }
+
+  .dropzone {
+    min-height: 235px;
+  }
+}
+
+/* 极窄屏幕：隐藏次要文案，并让操作按钮占满一行。 */
+@media (max-width: 480px) {
+  .brand-copy small,
+  .heading-note,
+  .offline-tag {
+    display: none;
+  }
+
+  .local-pill {
+    padding: 7px 10px;
+    font-size: 10px;
+  }
+
+  .color-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .angle-field {
+    grid-column: auto;
+  }
+
+  .logo-upload-row {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .logo-file-copy {
+    flex: 1 1 140px;
+  }
+
+  .download-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .privacy-strip {
+    align-items: flex-start;
+    padding: 17px;
+  }
+
+  footer {
+    justify-content: center;
+  }
+
+  footer span:last-child {
+    display: none;
+  }
+}
+
+/* 尊重系统“减少动态效果”偏好，避免旋转和位移动画造成不适。 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

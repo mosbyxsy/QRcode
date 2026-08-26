@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- 深色圆角底板与页面中的品牌标识保持一致。 -->
+  <rect width="64" height="64" rx="14" fill="#102a43"/>
+  <!-- 使用二维码式方块构成在小尺寸下仍清晰可辨的图案。 -->
+  <rect x="10" y="10" width="16" height="16" rx="4" fill="#ffffff"/>
+  <rect x="38" y="10" width="16" height="16" rx="4" fill="#ffffff"/>
+  <rect x="10" y="38" width="16" height="16" rx="4" fill="#ffffff"/>
+  <rect x="30" y="29" width="10" height="10" rx="3" fill="#b8e0d2"/>
+  <rect x="44" y="42" width="10" height="12" rx="3" fill="#ffffff"/>
+</svg>

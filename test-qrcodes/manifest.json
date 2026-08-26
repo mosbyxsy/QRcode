@@ -1,0 +1,37 @@
+[
+  {
+    "file": "01-url.png",
+    "type": "网址",
+    "data": "https://example.com/qr-test?source=codex"
+  },
+  {
+    "file": "02-wifi.png",
+    "type": "Wi-Fi",
+    "data": "WIFI:T:WPA;S:QR-Test-WiFi;P:TestPass123!;H:false;;"
+  },
+  {
+    "file": "03-phone.png",
+    "type": "电话",
+    "data": "tel:+8613800138000"
+  },
+  {
+    "file": "04-email.png",
+    "type": "邮件",
+    "data": "mailto:qr-test@example.com?subject=QR%20Test&body=Hello%20from%20QR%20code"
+  },
+  {
+    "file": "05-sms.png",
+    "type": "短信",
+    "data": "SMSTO:+8613800138000:QR code test message"
+  },
+  {
+    "file": "06-geo.png",
+    "type": "地理位置",
+    "data": "geo:31.2304,121.4737"
+  },
+  {
+    "file": "07-vcard.png",
+    "type": "vCard",
+    "data": "BEGIN:VCARD\r\nVERSION:3.0\r\nN:张;三;;;\r\nFN:张三\r\nORG:二维码测试实验室\r\nTEL;TYPE=CELL:+8613800138000\r\nEMAIL:qr-test@example.com\r\nURL:https://example.com\r\nADR;TYPE=WORK:;;测试路100号;上海市;上海市;200000;中国\r\nEND:VCARD"
+  }
+]
